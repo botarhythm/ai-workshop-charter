@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>技術解説 — Fable Orchestra ハイブリッド運用の仕組み</title>
-<meta name="description" content="Fable Orchestra型のアーキテクチャ、/orchの流れ、パターン判定(P0-P4)、モデル役割分担、実プロジェクトでの機能、他Skillsとの連携、導入手順を技術的に解説。">
+<title>技術解説 — orch × Ocean 統合運用の仕組み</title>
+<meta name="description" content="独立に生まれた2つの型 orch(fable_orchestra) と Ocean の共通哲学と独自性、統合エントリ /ocean の流れ、モデル選択3軸、他Skills連携、学びのループ、導入手順を技術的に解説。">
 <style>
   :root{
     --paper:#ECEEE9; --paper-2:#F5F6F2; --ink:#1B2420; --ink-soft:#525A54;
@@ -31,10 +31,9 @@
   .doc{width:100%;max-width:820px}
 
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin:0 0 12px}
-  h1{font-family:var(--serif);font-weight:600;font-size:clamp(27px,5vw,42px);line-height:1.2;margin:0;text-wrap:balance}
-  .lede{font-size:clamp(15px,2.2vw,17px);color:var(--ink-soft);margin:18px 0 0;max-width:64ch}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(26px,5vw,40px);line-height:1.2;margin:0;text-wrap:balance}
+  .lede{font-size:clamp(15px,2.2vw,17px);color:var(--ink-soft);margin:18px 0 0;max-width:66ch}
 
-  /* TOC */
   .toc{margin:clamp(26px,4vw,38px) 0;border:1px solid var(--line);border-radius:2px;background:var(--paper-2);padding:clamp(14px,2.5vw,20px) clamp(16px,3vw,24px)}
   .toc p{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
   .toc ol{margin:0;padding:0;list-style:none;counter-reset:t;display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
@@ -56,46 +55,39 @@
   ul.body,ol.body{max-width:66ch;padding-left:0;margin:12px 0;list-style:none}
   ul.body li,ol.body li{position:relative;padding-left:22px;margin:7px 0;font-size:14.5px;line-height:1.66}
   ul.body li::before{content:"";position:absolute;left:2px;top:9px;width:8px;height:8px;background:var(--teal);border-radius:2px;transform:rotate(45deg)}
-  ol.body{counter-reset:o}
-  ol.body li{counter-increment:o}
+  ol.body{counter-reset:o} ol.body li{counter-increment:o}
   ol.body li::before{content:counter(o);top:0;width:auto;height:auto;background:none;transform:none;font-family:var(--mono);font-size:12px;color:var(--brass)}
 
   pre{margin:16px 0;background:var(--code-bg);color:var(--code-ink);border-radius:4px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6}
-  pre .c{color:#7f9285} pre .k{color:#e0b072} pre .s{color:#9fc6a0}
+  pre .c{color:#7f9285}
 
   table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;overflow-x:auto;white-space:nowrap}
   table.wrap-ok{white-space:normal}
   th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
   th{background:var(--paper-2);font-weight:700;font-size:12px;letter-spacing:.03em}
   tbody tr:nth-child(even){background:rgba(255,255,255,.4)}
-  td .p{font-family:var(--mono);font-weight:700;font-size:12px}
-  .p0{color:#7a3ea6} .p1{color:#b0431f} .p2{color:var(--brass)} .p3{color:var(--teal)} .p4{color:var(--ink-soft)}
+  th.orch,td.oc-orch{border-top:2px solid var(--teal)} th.ocean,td.oc-ocean{border-top:2px solid var(--brass)}
+  .colw{color:var(--ink-soft);font-family:var(--mono);font-size:11px;letter-spacing:.05em}
 
   .callout{border-left:4px solid var(--brass);background:var(--paper-2);border-radius:2px;padding:14px 18px;margin:18px 0}
   .callout .l{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin:0 0 6px}
   .callout p{margin:0;font-size:14px}
 
-  /* hub-spoke diagram */
-  .diagram{border:1px solid var(--line);border-radius:2px;background:var(--paper-2);padding:clamp(18px,3vw,28px);margin:18px 0}
-  .hub{max-width:340px;margin:0 auto 6px;text-align:center;border:2px solid var(--teal);border-radius:3px;padding:12px}
-  .hub .t{font-weight:700;color:var(--teal-ink);font-size:14px}
-  .hub .d{font-size:12px;color:var(--ink-soft);font-family:var(--mono)}
-  .stem{width:2px;height:22px;background:var(--line);margin:0 auto}
-  .spokes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
-  .spoke{border:1px dashed var(--brass-soft);border-radius:3px;padding:10px;text-align:center}
-  .spoke .t{font-weight:700;font-size:13px}
-  .spoke .d{font-size:11px;color:var(--ink-soft);font-family:var(--mono);margin-top:3px}
-  @media(max-width:560px){.spokes{grid-template-columns:1fr}}
+  .feature{border:1px solid var(--brass-soft);border-left:5px solid var(--brass);border-radius:2px;background:linear-gradient(180deg,#F7F2E9,#F5F6F2);padding:clamp(18px,3.4vw,26px);margin:18px 0}
+  .feature .tag{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin:0 0 8px}
+  .feature h3{font-family:var(--serif);font-weight:600;font-size:20px;margin:0 0 8px;color:var(--teal-ink)}
+  .feature .loop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+  .feature .loop .n{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--ink)}
+  .feature .loop .ar{color:var(--brass)}
 
-  /* flow steps */
   .flow{display:grid;gap:10px;margin:18px 0}
   .step{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;border:1px solid var(--line);border-radius:2px;background:var(--paper-2);padding:14px 16px}
-  .step .num{font-family:var(--mono);font-size:13px;color:#fff;background:var(--teal);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-  .step.ours .num{background:var(--brass)}
+  .step .num{font-family:var(--mono);font-size:13px;color:#fff;background:var(--teal);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .step.inst .num{background:var(--brass)}
   .step .body b{font-size:14.5px}
   .step .body .who{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ink-soft);margin-top:3px;display:block}
   .step .body p{margin:5px 0 0;font-size:13.5px;color:var(--ink)}
-  .tagours{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass-soft);border-radius:999px;padding:1px 8px;margin-left:8px}
+  .taginst{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass-soft);border-radius:999px;padding:1px 8px;margin-left:8px}
 
   footer{max-width:820px;margin:0 auto;padding:20px clamp(16px,5vw,40px) 46px;border-top:1px solid var(--line);margin-top:clamp(40px,6vw,64px);font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between}
   footer a{color:var(--teal)}
@@ -112,164 +104,164 @@
 <div class="wrap"><div class="doc">
 
   <p class="eyebrow">技術解説 · How it actually works</p>
-  <h1>Fable Orchestra ハイブリッド運用の仕組み</h1>
+  <h1>orch × Ocean — 統合運用の仕組み</h1>
   <p class="lede">
-    憲章ページの「工房」を、実装レベルで開けて見せます。アーキテクチャ、<span class="mono">/orch</span> の流れ、
-    パターン判定、モデルの役割分担、実プロジェクトでの動き、そして<strong>他のSkillsとの連携</strong>まで。
-    土台は <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">akiratsukakoshi/fable_orchestra</a>、
-    その上に私たちの拡張（F1/F2・P0）を重ねています。
+    憲章ページの「工房」を実装レベルで開けて見せます。独立に生まれた2つの型
+    <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">orch（fable_orchestra / akiratsukakoshi）</a>
+    と Ocean（私たちの型）。その<strong>共通の哲学</strong>と<strong>それぞれの独自性</strong>、両者を束ねた統一エントリ
+    <span class="mono">/ocean</span> の流れ、モデル選択、他Skills連携、そして「修正を資産に変える学びのループ」まで。
   </p>
 
   <nav class="toc" aria-label="目次">
     <p>目次</p>
     <ol>
-      <li><a href="#arch">ハブ＆スポーク構造</a></li>
-      <li><a href="#flow">/orch 実行の流れ</a></li>
-      <li><a href="#pattern">パターン判定 P0–P4</a></li>
-      <li><a href="#models">モデルの役割分担</a></li>
+      <li><a href="#converge">収束した2つの型</a></li>
+      <li><a href="#unique">それぞれの独自性</a></li>
+      <li><a href="#loop">学びのループ</a></li>
+      <li><a href="#flow">/ocean 実行の流れ</a></li>
+      <li><a href="#models">モデル選択（3軸）</a></li>
       <li><a href="#real">実プロジェクトでの動き</a></li>
       <li><a href="#skills">他のSkillsとの連携</a></li>
-      <li><a href="#econ">F1/F2 と P0 の技術的意味</a></li>
       <li><a href="#adopt">導入手順</a></li>
     </ol>
   </nav>
 
-  <section class="blk" id="arch">
-    <h2><span class="n">01</span>ハブ＆スポーク構造</h2>
-    <p>この仕組みは1個のスキルではなく、<strong>「読み取り専用の型（ハブ）」と「プロジェクトごとの状態（スポーク）」の分離</strong>で成り立ちます。ハブは全プロジェクト共通の思考法を保持し、スポークは各プロジェクト固有の進捗・決定・コストを保持します。</p>
-    <div class="diagram" role="img" aria-label="ハブとスポークの関係図">
-      <div class="hub"><div class="t">ハブ（fable_orchestra）</div><div class="d">model-routing.md · lessons/ · SKILL.md</div></div>
-      <div class="stem"></div>
-      <div class="spokes">
-        <div class="spoke"><div class="t">Project A</div><div class="d">STATUS.md<br>cost-log.md<br>CLAUDE.md</div></div>
-        <div class="spoke"><div class="t">Project B</div><div class="d">STATUS.md<br>cost-log.md<br>CLAUDE.md</div></div>
-        <div class="spoke"><div class="t">Project C</div><div class="d">STATUS.md<br>cost-log.md<br>CLAUDE.md</div></div>
+  <section class="blk" id="converge">
+    <h2><span class="n">01</span>収束した2つの型</h2>
+    <p>orch と Ocean は別々に育ちました。<strong>それぞれの設計者が、同じ問い——「高い最上位モデルのトークンを、何に使うべきか」——から出発</strong>し、驚くほど近い答えに独立して到達しています。とりわけ、両者とも最上位モデル（Fable）を<strong>ちょうど3つの高判断ポイントに絞る</strong>点で一致します。</p>
+    <table class="wrap-ok">
+      <thead><tr><th>共通の柱</th><th>orch での呼び方</th><th>Ocean での呼び方</th></tr></thead>
+      <tbody>
+        <tr><td>最上位モデルは"3点"だけ</td><td>P1設計 / 迷い域裁定 / P1検収</td><td>AC設計 / returned診断 / 抜き取り監査</td></tr>
+        <tr><td>量のある仕事は割安モデルへ</td><td>実装・調査をサブエージェントへ委譲</td><td>実装・調査を下位モデルへハンドオフ</td></tr>
+        <tr><td>状態はファイルに外部化</td><td>STATUS.md / cost-log.md</td><td>KNOWLEDGE.md / ADR / tasks/</td></tr>
+        <tr><td>検品は省略しない</td><td>検収3点セット</td><td>検証ループ＋抜き取り監査</td></tr>
+        <tr><td>改訂は現場の事実から</td><td>lessons/</td><td>各テンプレの改訂履歴</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><p class="l">この一致が意味すること</p><p>別々の設計者が同じ配置に行き着いた——これは<strong>この哲学が本質的に正しい</strong>という独立検証にほかならない。だからこそ、片方を否定するのではなく<strong>束ねる</strong>のが自然だった。</p></div>
+  </section>
+
+  <section class="blk" id="unique">
+    <h2><span class="n">02</span>それぞれの独自性</h2>
+    <p>同じ哲学でも力点が違います。<strong>優劣ではなく、異なる強み</strong>。束ねると互いの穴を埋め合うのはこのためです。</p>
+    <table class="wrap-ok">
+      <thead><tr><th>観点</th><th class="orch">orch の流儀</th><th class="ocean">Ocean の流儀</th></tr></thead>
+      <tbody>
+        <tr><td class="colw">配布・共有</td><td class="oc-orch"><strong>共有ハブ＋pull追従。</strong>大勢が同じ型を採用し更新を受け取り続けられる（プロダクト的）</td><td class="oc-ocean">自プロジェクト群に最適化した自作の型</td></tr>
+        <tr><td class="colw">モデル選択</td><td class="oc-orch">リスク採点 P1–P4（金銭/PII/不可逆/依存/定型）。<strong>明快で教えやすい</strong></td><td class="oc-ocean">3軸（曖昧さ×検出コスト×影響半径）。<strong>仕事の性質そのものを測る</strong></td></tr>
+        <tr><td class="colw">委譲の方式</td><td class="oc-orch">セッション内サブエージェント。<strong>自動ファンアウトとトークン計測に強い</strong></td><td class="oc-ocean">文書ハンドオフ。<strong>別セッション・別AI（Antigravity等）にも手渡せる</strong></td></tr>
+        <tr><td class="colw">状態・決定</td><td class="oc-orch">STATUS＋cost-logで<strong>コスト較正</strong>に寄せる</td><td class="oc-ocean">KNOWLEDGE＋ADRで<strong>決定の"なぜ"</strong>を残す</td></tr>
+        <tr><td class="colw">改善の回路</td><td class="oc-orch">lessons/ に教訓を蓄積</td><td class="oc-ocean"><strong>修正を型そのものに刻む学びのループ（§03）</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="sub">orch は「配って育てる」設計、Ocean は「渡して学ぶ」設計。どちらも同じ哲学の別々の到達点です。</p>
+  </section>
+
+  <section class="blk" id="loop">
+    <h2><span class="n">03</span>修正を資産に変える学びのループ</h2>
+    <p>Ocean の背骨にある、最も特徴的な仕組みです。<strong>「ここはこう直して」というあなたの一言を、その場の修正で終わらせない。</strong></p>
+    <div class="feature">
+      <p class="tag">Ocean の背骨</p>
+      <h3>直しは"事実"として型に吸収され、版が上がる</h3>
+      <p>現場でつまずいた事実（あなたの細かい修正指示を含む）は、まず<strong>該当タスクの修正よりも先に、型・受け入れ条件（AC）の書き方そのものに反映</strong>される。改訂の根拠は必ず「現場で困った事実」に限る——<strong>理屈だけの改訂はしない</strong>。だから次からは、誰が回しても最初からそのルールが効く。</p>
+      <div class="loop">
+        <span class="n">現場で困る / あなたが直す</span><span class="ar">→</span>
+        <span class="n">型・ACに反映</span><span class="ar">→</span>
+        <span class="n">改訂履歴に理由を刻む</span><span class="ar">→</span>
+        <span class="n">全セッションに恒久適用</span>
       </div>
     </div>
+    <h3>実際に型へ吸収された"現場の事実"の例</h3>
     <ul class="body">
-      <li><strong>ハブ</strong>は一度cloneして読み取り専用。<span class="mono">git pull</span> で作者の更新を受け取り続ける。書き込みは絶対にしない。</li>
-      <li><strong>スキル</strong>（<span class="mono">/orch</span>）はユーザー共通のスキル置き場に置き、<strong>どのプロジェクトからでも起動</strong>できる。</li>
-      <li><strong>スポーク</strong>は各プロジェクト配下の <span class="mono">docs/orchestration/</span>。状態を外部化するので、セッションやモデルをまたいで再開できる。</li>
-      <li><strong>私たちの拡張</strong>は各プロジェクトの <span class="mono">CLAUDE.md</span> に置く。SKILL.md本体を触らないので、pullで更新が来ても壊れない。</li>
+      <li>全体テストをACにする前に<strong>ベースラインを実測</strong>せよ（既存の赤があると、正しい実装ほど差し戻される事故が起きた）。</li>
+      <li>秘密情報スキャンは<strong>コードだけでなくmd/yaml等の文書ファイルも</strong>grepせよ（仕様書の中の平文パスワードを検出した実例）。</li>
+      <li>実機依存タスクは<strong>PCテストのgreenを実機の正常と信じるな</strong>／1変更ずつ実機確認（音声AIでウェイクワードを壊した実例）。</li>
+      <li>自己修正が入った合格（attempts&gt;0）は<strong>全件監査に格上げ</strong>（AC通過だが意図未達がすり抜けた実例）。</li>
     </ul>
-    <div class="callout"><p class="l">設計上の勘所</p><p>「共有の知恵（ハブ）」と「個別の状態（スポーク）」を物理的に分けたことで、<strong>更新の追従</strong>と<strong>プロジェクト独立性</strong>が両立する。カスタムは常にCLAUDE.md側＝上書き層に置くのが鉄則。</p></div>
+    <div class="callout"><p class="l">なぜ資産なのか</p><p>普通、レビューの指摘は一度直せば消える。この型では、指摘が<strong>手順書の一行として残る</strong>。修正のたびに工房の知恵が増え、同じ失敗を二度としない。あなたが費やした"直す労力"が、複利で効く資本に変わる。</p></div>
   </section>
 
   <section class="blk" id="flow">
-    <h2><span class="n">02</span>/orch 実行の流れ</h2>
-    <p>タスクを渡すと、指令塔役のモデルが次の順で回します。<span class="tagours">橙 = 私たちが挿入した拡張</span></p>
+    <h2><span class="n">04</span>/ocean 実行の流れ</h2>
+    <p>統一エントリ <span class="mono">/ocean</span> は、Ocean の型で回し、orch由来の計器を差し込みます。<span class="taginst">橙 = orch由来の計器</span></p>
     <div class="flow">
-      <div class="step"><div class="num">1</div><div class="body"><b>WP切り出し</b><span class="who">指令塔</span><p>タスクを「受け入れ条件つきで1回の委譲・検収で完結する単位（Work Package）」へ分解。各WPに目的・検証可能な合格条件・依存関係を付す。</p></div></div>
-      <div class="step ours"><div class="num">1b</div><div class="body"><b>規模の実測</b><span class="tagours">拡張</span><span class="who">scope_size.py</span><p>触るサブシステムの推定トークンを1コマンドで計測し、直読圏/ハイブリッド/蒸留必須の帯を判定。読み込み分担と見積りの土台にする。</p></div></div>
-      <div class="step"><div class="num">2</div><div class="body"><b>パターン判定</b><span class="who">指令塔（迷い域のみ上位モデル）</span><p>5問の採点シート（金銭+2 / 個人情報+2 / 不可逆+2 / 依存広い+1 / 定型−2）でP1〜P4を機械的に決める。</p></div></div>
-      <div class="step ours"><div class="num">2b</div><div class="body"><b>蒸留耐性テスト → P0判定</b><span class="tagours">拡張</span><span class="who">指令塔</span><p>リスクとは別に「答えは既知の要約から導けるか／未知の発見が要るか」を自問。後者なら<strong>P0（天才直営）</strong>へ。</p></div></div>
-      <div class="step"><div class="num">3</div><div class="body"><b>見積り提示</b><span class="who">指令塔 → ユーザー</span><p>WPごとにパターン・分担・入出力トークン見込みを表で提示。従量発生見込みや大型WLは<strong>着手承認を待つ</strong>。</p></div></div>
-      <div class="step"><div class="num">4</div><div class="body"><b>実行（パターン別の分担）</b><span class="who">指令塔 + 実行部隊サブエージェント</span><p>設計は指令塔、実装は割安モデル、調査は必ず安いモデルへ。詳細は §04。</p></div></div>
-      <div class="step"><div class="num">5</div><div class="body"><b>検収3点セット</b><span class="who">指令塔</span><p>(1) 合格条件を自分のツールで再実行 (2) 差分を目視 (3) 成果物を実読し「悪用されたら？失敗したら？」を自問。P1〜P3では省略禁止。</p></div></div>
-      <div class="step"><div class="num">6</div><div class="body"><b>実績記録</b><span class="who">指令塔 → スポーク</span><p>入出力トークンの実測を <span class="mono">cost-log.md</span> に、現在地を <span class="mono">STATUS.md</span> に追記。見積り精度が回を追って上がる。</p></div></div>
+      <div class="step"><div class="num">0</div><div class="body"><b>読み込み（コールドスタート）</b><span class="who">CLAUDE.md → KNOWLEDGE.md → 自分のタスクだけ</span><p>ハブのテンプレ（読み取り専用）と、プロジェクトの現在状態だけを読む。コンテキスト＝コスト。</p></div></div>
+      <div class="step"><div class="num">1</div><div class="body"><b>発注 / 作業の切り出し</b><span class="who">レビュー=05 / 新規=06 / 単発=ハンドオフ文書</span><p>受け入れ条件つきの単位に分解する。</p></div></div>
+      <div class="step inst"><div class="num">1b</div><div class="body"><b>規模の実測</b><span class="taginst">計器</span><span class="who">scope_size.py</span><p>触るスコープの推定トークンと帯（直読圏/ハイブリッド/蒸留必須）を計測。</p></div></div>
+      <div class="step"><div class="num">2</div><div class="body"><b>モデル選択（3軸）</b><span class="who">指令塔</span><p>曖昧さ×検出コスト×影響半径の3問で、Fable / Opus / Sonnet を決める（§05）。</p></div></div>
+      <div class="step inst"><div class="num">3</div><div class="body"><b>見積り＋承認ゲート</b><span class="taginst">計器</span><span class="who">指令塔 → ユーザー</span><p>入出力トークン見込みを提示。F2ではFable投入は必ず承認を待つ。</p></div></div>
+      <div class="step"><div class="num">4</div><div class="body"><b>実行（ハンドオフ）</b><span class="who">下位モデル（別セッション or サブエージェント）</span><p>タスク＝1ファイル（AC＋実行報告）。Fableは3点（AC設計/診断/監査）だけ。</p></div></div>
+      <div class="step"><div class="num">5</div><div class="body"><b>検証ループ</b><span class="who">AC機械実行＋抜き取り監査</span><p>2敗で差し戻し。不可逆・初回・機械AC無し・attempts&gt;0 は全件監査へ格上げ。</p></div></div>
+      <div class="step"><div class="num">6</div><div class="body"><b>記録＋学びのループ</b><span class="who">KNOWLEDGE.md / ADR / tasks</span><p>状態と決定を残す。見つかったACの穴は§03のループで型へ還元。トークン実測は <span class="mono">agent_usage.py</span>。</p></div></div>
     </div>
   </section>
 
-  <section class="blk" id="pattern">
-    <h2><span class="n">03</span>パターン判定 P0–P4</h2>
-    <p>「どれだけ厳格に、誰が回すか」をリスクで機械的に決めます。P1〜P4はorch由来、<strong>P0は私たちの追加</strong>です。</p>
-    <table>
-      <thead><tr><th>パターン</th><th>意味</th><th>誰が設計・検収</th><th>誰が実装</th><th>典型</th></tr></thead>
-      <tbody>
-        <tr><td><span class="p p0">P0</span><br><span class="tagours">拡張</span></td><td>探索性が高い（答えが未知）</td><td>天才が直営</td><td>天才が直営</td><td>原因不明のデバッグ／設計と実装が不可分な新規</td></tr>
-        <tr><td><span class="p p1">P1</span></td><td>高リスク（金銭・個人情報・不可逆）</td><td>天才（蒸留入力・短出力）</td><td>割安モデル</td><td>決済・認証・本番DB移行</td></tr>
-        <tr><td><span class="p p2">P2</span></td><td>標準</td><td>指令塔が指示書＋検収</td><td>割安モデル</td><td>機能追加・中規模リファクタ</td></tr>
-        <tr><td><span class="p p3">P3</span></td><td>低リスク</td><td>自走（詰まれば1問1答）</td><td>割安モデル</td><td>小改修・データ整形</td></tr>
-        <tr><td><span class="p p4">P4</span></td><td>定型・機械的</td><td>セルフチェック可</td><td>最安モデル</td><td>一括置換・雛形生成</td></tr>
-      </tbody>
-    </table>
-    <div class="callout"><p class="l">P0を足した理由</p><p>orchの物差しは<strong>リスク一軸</strong>。だが「危険ではないが探索的」な作業（未知のバグ調査など）はP3に落ち、天才がほぼ関与しないまま進む。要約から導けない問題を要約して渡すと<strong>答えごと失われる</strong>。P0はこの穴を塞ぐ脱出口で、根拠はorch自身の論理（「直読圏では委譲は固定費で負ける」）の裏返し＝<strong>「直営圏では蒸留は情報損失で負ける」</strong>。</p></div>
-  </section>
-
   <section class="blk" id="models">
-    <h2><span class="n">04</span>モデルの役割分担</h2>
-    <p>「指令塔」は<em>役割</em>であってモデル名ではありません。入口が割安モデル（例：Opus）でも、<strong>最も判断が重い短い成果物だけ</strong>を上位モデル（Fable）へサブエージェントとして外注できます。</p>
-    <h3>3つの層</h3>
-    <ul class="body">
-      <li><strong>指令塔（Conductor）</strong> — WP分解・採点・委譲の交通整理・検収。入口モデルが担う。</li>
-      <li><strong>判断オラクル（天才／Fable）</strong> — P1の設計書・迷い域の裁定・P1の検収最終判定・P0の直営。<strong>短く・判断が重い出力に限定</strong>。入力は蒸留を原則（P0のみ例外）。</li>
-      <li><strong>実行部隊（割安モデル／Opus・Sonnet）</strong> — 実装・調査・定型作業という「量のある仕事」。並列で回す。</li>
-    </ul>
-    <div class="callout"><p class="l">なぜ安く済むか</p><p>コストは出力より<strong>入力トークン</strong>が支配する。天才への入力を「蒸留した調査報告のみ」に絞り、出力も設計書8–12k・裁定3行に制限することで、高い判断を<strong>少額で</strong>買える。実行部隊の大量トークンは割安モデルが引き受ける。</p></div>
+    <h2><span class="n">05</span>モデル選択（Ocean 3軸に一本化）</h2>
+    <p>統合にあたり、モデル選択は Ocean の3軸に統一しました。<strong>タスクの種別ではなく、仕事の性質で選びます。</strong></p>
+    <ol class="body">
+      <li><strong>Q1. 受け入れ条件を「コマンド＋期待結果」で書き切れるか？</strong> 書き切れない（判断そのものが成果物）→ <strong>Fable</strong>。</li>
+      <li><strong>Q2. 失敗はACで自動検出でき、影響は対象ファイル内に閉じるか？</strong> はい → <strong>Sonnet</strong>／道中に自律判断が残る → <strong>Opus</strong>。</li>
+      <li><strong>Q3. 不可逆操作（本番・公開・課金・削除）を含むか？</strong> 含む → 実行はそのまま、計画承認と事後確認は Fable を通す（全件監査対象）。</li>
+    </ol>
+    <div class="callout"><p class="l">2つの流儀が地続きになった点</p><p>orch のリスク採点にあった「探索性（答えが未知）」への配慮は、Ocean の Q1「ACを書き切れるか＝判断が成果物か」に<strong>もともと包含</strong>されている。だから3軸に寄せても、orch の勘所は失われない。迷ったら1段安い方へ——エスカレーション経路が下振れを回収する。</p></div>
   </section>
 
   <section class="blk" id="real">
-    <h2><span class="n">05</span>実プロジェクトでの動き</h2>
-    <p>あるEC監査プロジェクト（初適用例）での回り方を、機密数値を伏せて示します。1つのゴールが複数WPに割れ、それぞれ別パターンで処理されます。</p>
+    <h2><span class="n">06</span>実プロジェクトでの動き</h2>
+    <p>あるEC監査プロジェクトでの回り方を、機密数値を伏せて示します。1つのゴールが複数の作業単位に割れ、それぞれ別の担当で処理されます。</p>
     <table class="wrap-ok">
-      <thead><tr><th>WP（作業単位）</th><th>判定の理由</th><th>パターン</th><th>回し方</th></tr></thead>
+      <thead><tr><th>作業単位</th><th>3軸の見立て</th><th>担当</th></tr></thead>
       <tbody>
-        <tr><td>停止していた顧客向けメール送信の復旧</td><td>外部送信・不可逆（誤送信は取り消せない）</td><td><span class="p p1">P1</span></td><td>原因調査は割安モデル→対策設計と「送信対象の限定」判断は上位モデル→実行前に承認ゲート</td></tr>
-        <tr><td>未設定の商品説明メタを一括生成</td><td>定型・低リスク（下書き→人がレビュー）</td><td><span class="p p4">P4</span></td><td>最安モデルで一括ドラフト→人が承認して反映</td></tr>
-        <tr><td>売上実績×在庫の優先リスト生成</td><td>低リスク・既知データの集計</td><td><span class="p p3">P3</span></td><td>割安モデルが自走で表を生成</td></tr>
-        <tr><td>原因不明の「特定流入だけ転換ゼロ」の調査</td><td>答えが未知・全体文脈が要る</td><td><span class="p p0">P0</span></td><td>天才が直営で仮説→検証（要約に耐えないため）</td></tr>
+        <tr><td>停止していた顧客向けメール送信の復旧</td><td>不可逆（誤送信は取り消せない）＝Q3該当</td><td>調査はSonnet→対策設計と送信対象の判断はFable→承認ゲート→全件監査</td></tr>
+        <tr><td>未設定の商品説明メタを一括生成</td><td>ACで全て規定できる定型</td><td>Sonnet が一括ドラフト→人が承認</td></tr>
+        <tr><td>売上×在庫の優先リスト生成</td><td>既知データの集計・道中に判断少</td><td>Opus/Sonnet が自走</td></tr>
+        <tr><td>原因不明の「特定流入だけ転換ゼロ」の調査</td><td>ACを書き切れない（判断が成果物）</td><td>Fable が直営で仮説→検証</td></tr>
       </tbody>
     </table>
-    <p class="sub">同じゴールでも、WPごとにコストと厳格さが最適化される。危険な1件だけ天才を厚く使い、量のある作業は割安に流す——これが「85点を安く買う」の実体です。</p>
+    <p class="sub">同じゴールでも、単位ごとにコストと厳格さが最適化される。危険な1件だけ最上位を厚く、量のある作業は割安に流す。</p>
   </section>
 
   <section class="blk" id="skills">
-    <h2><span class="n">06</span>他のSkillsとの連携</h2>
-    <p><span class="mono">/orch</span> は<strong>横断プロセス（メタ・スキル）</strong>です。ドメインを持つ他スキルを<em>置き換えず</em>、その上に「判定・委譲・検収」の型をかぶせます。指令塔が<strong>指揮者</strong>、他スキルが<strong>楽器</strong>という関係です。</p>
-    <h3>典型的な組み合わせ</h3>
+    <h2><span class="n">07</span>他のSkillsとの連携</h2>
+    <p><span class="mono">/ocean</span> は<strong>横断プロセス（メタ・スキル）</strong>です。ドメインを持つ他スキルを<em>置き換えず</em>、その上に「選択・委譲・検証」の型をかぶせます。指令塔が<strong>指揮者</strong>、他スキルが<strong>楽器</strong>という関係です。</p>
     <table class="wrap-ok">
-      <thead><tr><th>WPの種類</th><th>orchの判定</th><th>実作業で呼ぶスキル</th></tr></thead>
+      <thead><tr><th>作業の種類</th><th>3軸の見立て</th><th>実作業で呼ぶスキル</th></tr></thead>
       <tbody>
-        <tr><td>ブランド文面・営業コンテンツ</td><td>多くはP2/P3</td><td><span class="mono">brand-voice</span>（生成）＋ quality-assurance（検収）</td></tr>
-        <tr><td>課金・サブスク導入</td><td>金銭+2 → ほぼ<span class="p p1">P1</span></td><td><span class="mono">stripe-provision</span> / stripe-payment-link-kit</td></tr>
-        <tr><td>DBスキーマ変更・移行</td><td>不可逆+2 → <span class="p p1">P1</span></td><td>Supabase系ツール（検収でロールバック確認）</td></tr>
-        <tr><td>納品物（資料・表・PDF）</td><td>P3/P4</td><td><span class="mono">docx / pptx / xlsx / pdf</span></td></tr>
-        <tr><td>実装の検証</td><td>検収3点の道具として</td><td><span class="mono">/verify · /code-review · /security-review</span></td></tr>
-        <tr><td>調査・リサーチ</td><td>常に安いモデルへ</td><td><span class="mono">deep-research</span> / Explore エージェント</td></tr>
+        <tr><td>ブランド文面・営業コンテンツ</td><td>Opus/Sonnet</td><td><span class="mono">brand-voice</span>（生成）＋ quality-assurance（検証）</td></tr>
+        <tr><td>課金・サブスク導入</td><td>不可逆・課金 → Fable承認</td><td><span class="mono">stripe-provision</span> / stripe-payment-link-kit</td></tr>
+        <tr><td>DBスキーマ変更・移行</td><td>不可逆 → Fable承認</td><td>Supabase系ツール（監査でロールバック確認）</td></tr>
+        <tr><td>納品物（資料・表・PDF）</td><td>定型</td><td><span class="mono">docx / pptx / xlsx / pdf</span></td></tr>
+        <tr><td>実装の検証</td><td>検証ループの道具として</td><td><span class="mono">/verify · /code-review · /security-review</span></td></tr>
+        <tr><td>調査・リサーチ</td><td>常に安いモデルへ</td><td><span class="mono">deep-research</span> / Explore</td></tr>
       </tbody>
     </table>
-    <h3>連携の3原則</h3>
     <ol class="body">
-      <li><strong>orchは指揮、スキルは演奏。</strong> orchが「どのWPを・どのパターンで・誰に」を決め、実作業は各ドメインスキルが担う。</li>
-      <li><strong>検収は必ずorch側の3点セットで締める。</strong> ドメインスキルの出力も、<span class="mono">/verify</span> 等を道具に使って指令塔が独立に検品する。</li>
-      <li><strong>プロジェクトのCLAUDE.mdが最優先。</strong> 独自のエージェント運用やセキュリティ規約があれば、orchはその内側で「WPの判定・委譲・検収」としてだけ働き、既存の型を上書きしない。</li>
+      <li><strong>指揮とスキルは別。</strong> /ocean が「どの単位を・誰に・どの厳格さで」を決め、実作業は各ドメインスキルが担う。</li>
+      <li><strong>検品は必ず型側で締める。</strong> ドメインスキルの出力も <span class="mono">/verify</span> 等を道具に独立検証する。</li>
+      <li><strong>プロジェクトのCLAUDE.mdが最優先。</strong> 既存の運用があれば、その内側で選択・委譲・検証としてだけ働く。</li>
     </ol>
-    <div class="callout"><p class="l">要するに</p><p>orchは「何をどの厳格さで進め、誰が検品するか」の交通整理。<strong>能力そのものは他スキルが供給</strong>する。だから既存のスキル資産を捨てずに、その上へ規律だけを足せる。</p></div>
-  </section>
-
-  <section class="blk" id="econ">
-    <h2><span class="n">07</span>F1/F2 と P0 の技術的意味</h2>
-    <h3>F1 / F2 — 天才の"入手可能性"で運転規則が切り替わる</h3>
-    <ul class="body">
-      <li><strong>F1（天才が枠内で安い）</strong>：Fableを指令塔に厚く立て、監査・型・ルールブックという<strong>恒久資産</strong>を作り置く。将来割安モデルが賢く動くための投資フェーズ。</li>
-      <li><strong>F2（天才が従量／枠が枯渇）</strong>：既定は割安モデルの自走。Fable投入はP1の設計・裁定・検収とP0直営に限定し、<strong>必ず見積り→承認</strong>を通す。勝手な従量発生をゼロにする。</li>
-      <li>切替はユーザー宣言。現フェーズの正はスポークの <span class="mono">STATUS.md</span> 冒頭に置く（規則本体には現在地を書かない＝陳腐化防止）。</li>
-    </ul>
-    <h3>プロンプトキャッシュと「降板」の無効化</h3>
-    <p>orchには、従量の指令塔を守るためのキャッシュ規律や「降板プロトコル」があります。これらは<strong>指令塔が従量モデルである前提</strong>の装置。私たちの既定構成（入口＝定額モデル）では空回りするため<strong>明示的に無効化</strong>し、代わりに「天才を呼ぶ時は必ず承認ゲート」を鉄則に置き換えました。</p>
-    <div class="callout"><p class="l">入力が支配する、という事実</p><p>対話が伸びるほど、1ターンごとに<strong>会話全量の再読コスト</strong>が積み上がる（出力は小さくても入力が大きい）。だからF2では、重い会話文脈を従量モデルに何度も読ませない——必要な判断だけを蒸留してサブエージェントに渡す設計になっている。</p></div>
   </section>
 
   <section class="blk" id="adopt">
     <h2><span class="n">08</span>導入手順</h2>
     <p>仲間が自分の環境に入れる場合の最小手順です（<span class="mono">~</span> はホーム。Windowsは各自のパスに読み替え）。</p>
-    <pre><span class="c"># 1. ハブをclone（読み取り専用・常設）</span>
-git clone https://github.com/akiratsukakoshi/fable_orchestra ~/fable_orchestra
-
-<span class="c"># 2. スキルを共通置き場へコピー（全プロジェクトで /orch 有効）</span>
+    <pre><span class="c"># 1. 方法論の芯(ハブ)を用意し、スキルを共通置き場へ</span>
 mkdir -p ~/.claude/skills
-cp -r ~/fable_orchestra/skills/orch ~/.claude/skills/
+cp -r &lt;Fable_Ocean&gt;/skills/ocean ~/.claude/skills/
 
-<span class="c"># 3. SKILL.md 冒頭の「ハブのパス」をclone先に書き換える</span>
-<span class="c">#    （clone先を既定から変えた場合のみ）</span></pre>
-    <p>各プロジェクトでは、初回に <span class="mono">/orch</span> を起動するとスポーク（<span class="mono">docs/orchestration/STATUS.md</span> ほか）が作られます。私たちの拡張（F1/F2・P0・承認ゲート）を効かせるには、プロジェクトの <span class="mono">CLAUDE.md</span> に上書き規約を10行ほど置きます。</p>
-    <div class="callout"><p class="l">更新の作法</p><p>ハブは <span class="mono">git pull</span> で追従。スキルを再コピーしたら、SKILL.mdのハブパス書き換えだけ再適用する（本体へのその他の編集はしない＝次回pullで消えるため）。カスタムは常にCLAUDE.md側へ。</p></div>
+<span class="c"># 2. SKILL.md 冒頭の「ハブのパス」を自分のテンプレ置き場に合わせる</span>
+
+<span class="c"># 3. 各プロジェクトで /ocean を起動 → KNOWLEDGE.md / tasks/ が用意される</span></pre>
+    <p>各プロジェクトの <span class="mono">CLAUDE.md</span> に運用規約（F1/F2フェーズ・承認ゲート）を数行置けば、そのプロジェクト固有の前提が型より優先されます。改善は常に「現場で困った事実」を根拠に、型そのものへ還元してください（§03）。</p>
+    <div class="callout"><p class="l">出自と敬意</p><p>この統合型は、Ocean（私たちの型）を背骨に、<strong>盟友 <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">akiratsukakoshi</a> の orch（fable_orchestra）</strong>から計器（トークン実測・フェーズ規律）を受け取って成り立っています。同じ問いから独立に生まれた同志の設計に敬意を。</p></div>
   </section>
 
 </div></div>
 
 <footer>
-  <span>Fable Orchestra × Hybrid Operating Rules · 技術解説</span>
+  <span>orch × Ocean · 技術解説</span>
   <span><a href="index.html">← 運用憲章へ戻る</a> · 2026-07-06</span>
 </footer>
 
