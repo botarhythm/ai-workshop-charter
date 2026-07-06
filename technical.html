@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>技術解説 — orch × Ocean 統合運用の仕組み</title>
-<meta name="description" content="独立に生まれた2つの型 orch(fable_orchestra) と Ocean の共通哲学と独自性、統合エントリ /ocean の流れ、モデル選択3軸、他Skills連携、学びのループ、導入手順を技術的に解説。">
+<title>技術解説 — Orchestra × Ocean 統合運用の仕組み</title>
+<meta name="description" content="独立に生まれた2つの型 Orchestra(fable_orchestra) と Ocean の共通哲学と独自性、統合エントリ /ocean の流れ、モデル選択3軸、他Skills連携、学びのループ、導入手順を技術的に解説。">
 <style>
   :root{
     --paper:#ECEEE9; --paper-2:#F5F6F2; --ink:#1B2420; --ink-soft:#525A54;
@@ -105,10 +105,10 @@
 <div class="wrap"><div class="doc">
 
   <p class="eyebrow">技術解説 · How it actually works</p>
-  <h1>orch × Ocean — 統合運用の仕組み</h1>
+  <h1>Orchestra × Ocean — 統合運用の仕組み</h1>
   <p class="lede">
     憲章ページの「工房」を実装レベルで開けて見せます。独立に生まれた2つの型
-    <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">orch（fable_orchestra / akiratsukakoshi）</a>
+    <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">Orchestra（fable_orchestra / akiratsukakoshi）</a>
     と Ocean（私たちの型）。その<strong>共通の哲学</strong>と<strong>それぞれの独自性</strong>、両者を束ねた統一エントリ
     <span class="mono">/ocean</span> の流れ、モデル選択、他Skills連携、そして「修正を資産に変える学びのループ」まで。
   </p>
@@ -129,9 +129,9 @@
 
   <section class="blk" id="converge">
     <h2><span class="n">01</span>収束した2つの型</h2>
-    <p>orch と Ocean は別々に育ちました。<strong>それぞれの設計者が、同じ問い——「高い最上位モデルのトークンを、何に使うべきか」——から出発</strong>し、驚くほど近い答えに独立して到達しています。とりわけ、両者とも最上位モデル（Fable）を<strong>ちょうど3つの高判断ポイントに絞る</strong>点で一致します。</p>
+    <p>Orchestra と Ocean は別々に育ちました。<strong>それぞれの設計者が、同じ問い——「高い最上位モデルのトークンを、何に使うべきか」——から出発</strong>し、驚くほど近い答えに独立して到達しています。とりわけ、両者とも最上位モデル（Fable）を<strong>ちょうど3つの高判断ポイントに絞る</strong>点で一致します。</p>
     <table class="wrap-ok">
-      <thead><tr><th>共通の柱</th><th>orch での呼び方</th><th>Ocean での呼び方</th></tr></thead>
+      <thead><tr><th>共通の柱</th><th>Orchestra での呼び方</th><th>Ocean での呼び方</th></tr></thead>
       <tbody>
         <tr><td>最上位モデルは"3点"だけ</td><td>P1設計 / 迷い域裁定 / P1検収</td><td>AC設計 / returned診断 / 抜き取り監査</td></tr>
         <tr><td>量のある仕事は割安モデルへ</td><td>実装・調査をサブエージェントへ委譲</td><td>実装・調査を下位モデルへハンドオフ</td></tr>
@@ -147,7 +147,7 @@
     <h2><span class="n">02</span>それぞれの独自性</h2>
     <p>同じ哲学でも力点が違います。<strong>優劣ではなく、異なる強み</strong>。束ねると互いの穴を埋め合うのはこのためです。</p>
     <table class="wrap-ok">
-      <thead><tr><th>観点</th><th class="orch">orch の流儀</th><th class="ocean">Ocean の流儀</th></tr></thead>
+      <thead><tr><th>観点</th><th class="orch">Orchestra の流儀</th><th class="ocean">Ocean の流儀</th></tr></thead>
       <tbody>
         <tr><td class="colw">配布・共有</td><td class="oc-orch"><strong>共有ハブ＋pull追従。</strong>大勢が同じ型を採用し更新を受け取り続けられる（プロダクト的）</td><td class="oc-ocean">自プロジェクト群に最適化した自作の型</td></tr>
         <tr><td class="colw">モデル選択</td><td class="oc-orch">リスク採点 P1–P4（金銭/PII/不可逆/依存/定型）。<strong>明快で教えやすい</strong></td><td class="oc-ocean">3軸（曖昧さ×検出コスト×影響半径）。<strong>仕事の性質そのものを測る</strong></td></tr>
@@ -156,7 +156,7 @@
         <tr><td class="colw">改善の回路</td><td class="oc-orch">lessons/ に教訓を蓄積</td><td class="oc-ocean"><strong>修正を型そのものに刻む学びのループ（§03）</strong></td></tr>
       </tbody>
     </table>
-    <p class="sub">orch は「配って育てる」設計、Ocean は「渡して学ぶ」設計。どちらも同じ哲学の別々の到達点です。</p>
+    <p class="sub">Orchestra は「配って育てる」設計、Ocean は「渡して学ぶ」設計。どちらも同じ哲学の別々の到達点です。</p>
   </section>
 
   <section class="blk" id="loop">
@@ -185,7 +185,7 @@
 
   <section class="blk" id="flow">
     <h2><span class="n">04</span>/ocean 実行の流れ</h2>
-    <p>統一エントリ <span class="mono">/ocean</span> は、Ocean の型で回し、orch由来の計器を差し込みます。<span class="taginst">橙 = orch由来の計器</span></p>
+    <p>統一エントリ <span class="mono">/ocean</span> は、Ocean の型で回し、Orchestra由来の計器を差し込みます。<span class="taginst">橙 = Orchestra由来の計器</span></p>
     <div class="flow">
       <div class="step"><div class="num">0</div><div class="body"><b>読み込み（コールドスタート）</b><span class="who">CLAUDE.md → KNOWLEDGE.md → 自分のタスクだけ</span><p>ハブのテンプレ（読み取り専用）と、プロジェクトの現在状態だけを読む。コンテキスト＝コスト。</p></div></div>
       <div class="step"><div class="num">1</div><div class="body"><b>発注 / 作業の切り出し</b><span class="who">レビュー=05 / 新規=06 / 単発=ハンドオフ文書</span><p>受け入れ条件つきの単位に分解する。</p></div></div>
@@ -206,7 +206,7 @@
       <li><strong>Q2. 失敗はACで自動検出でき、影響は対象ファイル内に閉じるか？</strong> はい → <strong>Sonnet</strong>／道中に自律判断が残る → <strong>Opus</strong>。</li>
       <li><strong>Q3. 不可逆操作（本番・公開・課金・削除）を含むか？</strong> 含む → 実行はそのまま、計画承認と事後確認は Fable を通す（全件監査対象）。</li>
     </ol>
-    <div class="callout"><p class="l">2つの流儀が地続きになった点</p><p>orch のリスク採点にあった「探索性（答えが未知）」への配慮は、Ocean の Q1「ACを書き切れるか＝判断が成果物か」に<strong>もともと包含</strong>されている。だから3軸に寄せても、orch の勘所は失われない。迷ったら1段安い方へ——エスカレーション経路が下振れを回収する。</p></div>
+    <div class="callout"><p class="l">2つの流儀が地続きになった点</p><p>Orchestra のリスク採点にあった「探索性（答えが未知）」への配慮は、Ocean の Q1「ACを書き切れるか＝判断が成果物か」に<strong>もともと包含</strong>されている。だから3軸に寄せても、Orchestra の勘所は失われない。迷ったら1段安い方へ——エスカレーション経路が下振れを回収する。</p></div>
   </section>
 
   <section class="blk" id="real">
@@ -260,13 +260,13 @@ cp -r ~/fable-ocean-skill/skills/ocean ~/.claude/skills/
 <span class="c"># 3. SKILL.md 冒頭の「ハブのパス」を clone 先に合わせる</span>
 <span class="c"># 4. 各プロジェクトで /ocean を起動 → KNOWLEDGE.md / tasks/ が用意される</span></pre>
     <p>各プロジェクトの <span class="mono">CLAUDE.md</span> に運用規約（F1/F2フェーズ・承認ゲート）を数行置けば、そのプロジェクト固有の前提が型より優先されます。改善は常に「現場で困った事実」を根拠に、型そのものへ還元してください（§03）。</p>
-    <div class="callout"><p class="l">出自と敬意</p><p>この統合型は、Ocean（私たちの型）を背骨に、<strong>盟友 <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">akiratsukakoshi</a> の orch（fable_orchestra）</strong>から計器（トークン実測・フェーズ規律）を受け取って成り立っています。同じ問いから独立に生まれた同志の設計に敬意を。</p></div>
+    <div class="callout"><p class="l">出自と敬意</p><p>この統合型は、Ocean（私たちの型）を背骨に、<strong>盟友 <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">akiratsukakoshi</a> の Orchestra（fable_orchestra）</strong>から計器（トークン実測・フェーズ規律）を受け取って成り立っています。同じ問いから独立に生まれた同志の設計に敬意を。</p></div>
   </section>
 
 </div></div>
 
 <footer>
-  <span>orch × Ocean · 技術解説</span>
+  <span>Orchestra × Ocean · 技術解説</span>
   <span><a href="index.html">← 運用憲章へ戻る</a> · 2026-07-06</span>
 </footer>
 
