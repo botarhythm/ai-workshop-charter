@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI開発の運用憲章 — 私たちならではの拡張</title>
+<meta name="description" content="優秀なAIを毎回呼ぶ働き方を、賢さ・段取り・品質・お金の規律を備えた"まわり続ける工房"に変える。Fable Orchestra型と、私たち独自の拡張(F1/F2・P0直営)を非エンジニア向けに図解。">
+<style>
+  :root{
+    --paper:#ECEEE9; --paper-2:#F5F6F2; --ink:#1B2420; --ink-soft:#525A54;
+    --line:#C9CFC6; --teal:#245450; --teal-ink:#173A37; --brass:#8A6220; --brass-soft:#B98A3E;
+    --serif:"Yu Mincho","YuMincho","Hiragino Mincho ProN",serif;
+    --sans:"Yu Gothic","YuGothic","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    --mono:"SFMono-Regular",Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.75;-webkit-font-smoothing:antialiased}
+  .tnum{font-variant-numeric:tabular-nums}
+  a{color:var(--teal);text-decoration-thickness:1px;text-underline-offset:2px}
+
+  /* nav */
+  .nav{border-bottom:1px solid var(--line);background:var(--paper)}
+  .nav .inner{max-width:860px;margin:0 auto;padding:14px clamp(16px,5vw,40px);display:flex;gap:8px 22px;align-items:baseline;flex-wrap:wrap}
+  .nav .brand{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-right:auto}
+  .nav a{font-family:var(--sans);font-size:13.5px;text-decoration:none;color:var(--ink-soft);padding-bottom:2px}
+  .nav a.here{color:var(--teal-ink);border-bottom:2px solid var(--brass-soft)}
+  .nav a:hover{color:var(--teal-ink)}
+
+  .wrap{padding:clamp(24px,5vw,64px) clamp(16px,5vw,40px);display:flex;justify-content:center}
+  .sheet{width:100%;max-width:860px}
+
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,6vw,52px);line-height:1.18;letter-spacing:.01em;margin:0;text-wrap:balance}
+  h1 .em{color:var(--teal-ink);border-bottom:3px solid var(--brass-soft);padding-bottom:2px}
+  .thesis{font-size:clamp(15px,2.4vw,18px);color:var(--ink-soft);margin:20px 0 0;max-width:60ch}
+  .rule{height:1px;background:var(--line);border:0;margin:clamp(28px,5vw,44px) 0}
+
+  .seclab{display:flex;align-items:baseline;gap:14px;margin:0 0 20px;flex-wrap:wrap}
+  .seclab .k{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--ink-soft)}
+  .seclab h2{font-family:var(--serif);font-weight:600;font-size:clamp(20px,3.4vw,26px);margin:0;letter-spacing:.02em}
+
+  .base{border:1px solid var(--line);border-radius:2px;padding:clamp(16px,3vw,24px)}
+  .base .cap{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+  .baserow{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+  .baserow .cell{background:var(--paper);padding:14px 12px}
+  .baserow .cell b{display:block;font-size:14px;font-weight:600;margin-bottom:3px}
+  .baserow .cell span{font-size:12.5px;color:var(--ink-soft);line-height:1.55}
+  @media(max-width:620px){.baserow{grid-template-columns:repeat(2,1fr)}}
+
+  .cards{display:grid;gap:16px}
+  .card{background:var(--paper-2);border:1px solid var(--line);border-left:4px solid var(--brass);border-radius:2px;padding:clamp(18px,3.4vw,26px)}
+  .card .head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+  .card .no{font-family:var(--mono);font-size:13px;color:var(--brass);letter-spacing:.1em;padding-top:2px}
+  .card h3{font-family:var(--serif);font-weight:600;font-size:clamp(18px,3vw,22px);margin:0;letter-spacing:.01em}
+  .card .plain{margin:2px 0 16px;color:var(--ink);font-size:15px;max-width:62ch}
+  .contrast{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:2px;overflow:hidden}
+  .contrast>div{background:var(--paper-2);padding:12px 14px}
+  .contrast .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 6px}
+  .contrast .a .lab{color:var(--ink-soft)} .contrast .b .lab{color:var(--brass)}
+  .contrast p{margin:0;font-size:13.5px;line-height:1.62;color:var(--ink)}
+  .contrast .a,.contrast .a p{color:var(--ink-soft)}
+  @media(max-width:560px){.contrast{grid-template-columns:1fr}}
+  .flag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass-soft);border-radius:999px;padding:2px 10px;margin-left:auto;white-space:nowrap;align-self:center}
+
+  .phase{border:1px solid var(--line);border-radius:2px;overflow:hidden;background:var(--paper-2)}
+  .phase .track{display:grid;grid-template-columns:1fr 1fr}
+  .phase .seg{padding:clamp(16px,3vw,22px)}
+  .phase .seg.f2{background:var(--teal);color:#EAF0EE}
+  .phase .seg .tag{font-family:var(--mono);font-size:12px;letter-spacing:.2em;margin:0 0 8px}
+  .phase .seg.f1 .tag{color:var(--teal)} .phase .seg.f2 .tag{color:#CDE0DB}
+  .phase .seg b{font-family:var(--serif);font-size:17px;font-weight:600;display:block;margin-bottom:6px}
+  .phase .seg p{margin:0;font-size:13.5px;line-height:1.62}
+  .phase .seg.f1 p{color:var(--ink-soft)}
+  .phase .seg.f2 .now{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;background:var(--brass);color:#fff;padding:3px 10px;border-radius:999px}
+  @media(max-width:560px){.phase .track{grid-template-columns:1fr}}
+
+  .payoff{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
+  .payoff li{position:relative;padding-left:26px;font-size:14.5px;line-height:1.6}
+  .payoff li::before{content:"";position:absolute;left:0;top:9px;width:12px;height:12px;background:var(--teal);border-radius:2px;transform:rotate(45deg)}
+  .payoff li b{font-weight:600}
+  @media(max-width:560px){.payoff{grid-template-columns:1fr}}
+
+  .kicker{font-family:var(--serif);font-size:clamp(18px,3.2vw,24px);line-height:1.5;color:var(--teal-ink);margin:clamp(28px,5vw,40px) 0 0;text-wrap:balance}
+  .kicker .b{color:var(--brass)}
+
+  .next{margin-top:clamp(28px,5vw,40px);border:1px solid var(--line);border-radius:2px;padding:clamp(16px,3vw,22px);background:var(--paper-2);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .next .t{font-size:14px;color:var(--ink-soft)}
+  .next a.btn{font-family:var(--sans);font-size:14px;text-decoration:none;color:#fff;background:var(--teal);padding:9px 18px;border-radius:2px;white-space:nowrap}
+  .next a.btn:hover{background:var(--teal-ink)}
+
+  footer{max-width:860px;margin:0 auto;padding:16px clamp(16px,5vw,40px) 40px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between}
+
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:no-preference){
+    .sheet>*{animation:rise .5s ease both}
+    .sheet>*:nth-child(2){animation-delay:.04s}
+    .sheet>*:nth-child(3){animation-delay:.08s}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="inner">
+  <span class="brand">Operating Charter</span>
+  <a class="here" href="index.html">運用憲章</a>
+  <a href="technical.html">技術解説 →</a>
+</div></nav>
+
+<div class="wrap"><div class="sheet">
+
+  <header>
+    <p class="eyebrow">運用憲章 · Fable Orchestra × 私たちの拡張</p>
+    <h1>「日雇いの天才」から<br><span class="em">自分の工房の経営</span>へ</h1>
+    <p class="thesis">
+      優秀なAIを毎回ゼロから呼ぶ働き方を、<b>賢さ・段取り・品質・お金の規律を備えた"まわり続ける工房"</b>に変えました。
+      この規則は今回のプロジェクト専用ではなく、あなたの<b>次のどのプロジェクトにもそのまま付いてきます</b>。
+    </p>
+  </header>
+
+  <hr class="rule">
+
+  <section class="base" aria-label="土台">
+    <p class="cap">土台 — orch（既製の型）が与えてくれるもの</p>
+    <div class="baserow">
+      <div class="cell"><b>段取りの標準化</b><span>合図ひとつで、どの現場も同じ手順が立ち上がる</span></div>
+      <div class="cell"><b>職人の使い分け</b><span>高い天才と割安な職人を仕事に応じて振り分ける</span></div>
+      <div class="cell"><b>検品の義務化</b><span>作った物は必ず味見してから出す</span></div>
+      <div class="cell"><b>記録の外部化</b><span>現在地と決定を台帳に残し、続きから再開できる</span></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section aria-label="私たちの拡張">
+    <div class="seclab">
+      <span class="k">ここが本題</span>
+      <h2>私たちならではの4つの追加 <span style="font-family:var(--sans);font-weight:400;font-size:14px;color:var(--brass)">— orch には無い</span></h2>
+    </div>
+
+    <div class="cards">
+      <article class="card">
+        <div class="head"><span class="no">01</span><h3>「安いうちに写経する」二段構え</h3><span class="flag">今日ここを通過</span></div>
+        <p class="plain">天才が使える"今のうち"に、その仕事の型を規則という本に写し取る。天才が去っても、割安チームがその本を読んで賢く振る舞える。</p>
+        <div class="contrast">
+          <div class="a"><p class="lab">orch標準</p><p>天才が常に司令塔にいる前提。いなくなる日を想定していない。</p></div>
+          <div class="b"><p class="lab">私たち</p><p>F1（天才が安い間）で型を作り置き→F2（去った後）は割安チームで回す。<b>まさに今日F2へ移行、慌てない。</b></p></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head"><span class="no">02</span><h3>「探索性」というもう一つの物差し（P0直営）</h3></div>
+        <p class="plain">答えが"まだ誰も知らない"仕事は、要約して天才に渡すと答えごと消える。その時だけ天才が最初から最後まで担当する脱出口を用意した。</p>
+        <div class="contrast">
+          <div class="a"><p class="lab">orch標準</p><p>危険度（お金・個人情報）だけで重要度を測る、一本の物差し。</p></div>
+          <div class="b"><p class="lab">私たち</p><p>「既知の要約で解けるか／未知の発見が要るか」を毎回自問。後者は<b>天才を丸ごと投入</b>してよい。</p></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head"><span class="no">03</span><h3>本体を触らない「別紙で自分仕様」</h3></div>
+        <p class="plain">改造を本体に書き込むと、作者の更新が来たとき消える。私たちは本体を一切いじらず、別紙だけで自分仕様にした。</p>
+        <div class="contrast">
+          <div class="a"><p class="lab">orch標準</p><p>手を入れるなら本体を書き換えがち＝更新のたびに衝突・消失。</p></div>
+          <div class="b"><p class="lab">私たち</p><p>調整は別紙に集約。<b>作者の改良を今後もずっと受け取り続けられる。</b></p></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head"><span class="no">04</span><h3>不意打ちで課金されない鉄則</h3></div>
+        <p class="plain">orchの節約装置は「高い天才が司令塔にいる」前提。私たちの実態（割安モデルが主役）では空回りする。外して、代わりに支出の歯止めを効かせた。</p>
+        <div class="contrast">
+          <div class="a"><p class="lab">orch標準</p><p>天才前提の節約ルール（降板・キャッシュ規律）が、私たちの構成では働かない。</p></div>
+          <div class="b"><p class="lab">私たち</p><p>それらを無効化し、<b>「天才を呼ぶ時は必ず"いくら"を見せてGO待ち」</b>を鉄則に。勝手に課金は起きない。</p></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section aria-label="現在地">
+    <div class="seclab"><span class="k">現在地</span><h2>いま工房はどの段階か</h2></div>
+    <div class="phase"><div class="track tnum">
+      <div class="seg f1">
+        <p class="tag">F1 — 天才が安い間</p><b>型を作り置く期間</b>
+        <p>Fableを厚く使い、監査・型・ルールブックという"恒久資産"を仕上げる。将来割安モデルが賢く動くための仕込み。</p>
+      </div>
+      <div class="seg f2">
+        <p class="tag">F2 — 天才が高い / 枠が尽きた後</p><b>作った型で安く回す期間</b>
+        <p>既定は割安モデルの自走。天才は"見積り→承認"を経た重要局面だけ。支出は歯止め付き。</p>
+        <span class="now tnum">▶ 現在 F2（残枠 &lt;2%）</span>
+      </div>
+    </div></div>
+  </section>
+
+  <hr class="rule">
+
+  <section aria-label="今後への効果">
+    <div class="seclab"><span class="k">効果</span><h2>今後のプロジェクト開発に効くこと</h2></div>
+    <ul class="payoff">
+      <li><b>訓練済みの工房が付いてくる</b> — 新しい事業をゼロから設計し直さない</li>
+      <li><b>出費が読める・不意打ちがない</b> — 高い判断を買う時は必ず事前承認</li>
+      <li><b>誰が作っても品質が守られる</b> — 検品を省略禁止にしてある</li>
+      <li><b>やるほど賢くなる</b> — 教訓と台帳が積み上がり続ける</li>
+      <li><b>変化に強い</b> — モデルや価格が変わっても土台は揺るがない</li>
+      <li><b>持ち運べる</b> — この規則は全プロジェクト共通の資産</li>
+    </ul>
+
+    <p class="kicker">要するに——優秀なAIを<span class="b">日雇いする</span>段階を卒業し、<br>賢さと規律を備えた<span class="b">自分の工房を経営する</span>段階に上がった。</p>
+
+    <div class="next">
+      <span class="t">仕組みの中身（アーキテクチャ・パターン判定・他スキル連携・導入手順）を知りたい方へ</span>
+      <a class="btn" href="technical.html">技術解説ページ →</a>
+    </div>
+  </section>
+
+</div></div>
+
+<footer>
+  <span>Fable Orchestra × Hybrid Operating Rules</span>
+  <span>更新 2026-07-06 · 運用フェーズ F2</span>
+</footer>
+
+</body>
+</html>
