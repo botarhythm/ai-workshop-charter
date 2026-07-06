@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI開発の運用憲章 — 2つの型、ひとつの哲学</title>
-<meta name="description" content="独立に生まれた2つの開発運用の型 Orchestra(fable_orchestra) と Ocean。共通の哲学と、それぞれの独自性を非エンジニア向けに図解。修正を資産に変える学びのループも。">
+<title>Fable Ocean — AI開発を"まわり続ける工房"に変える型</title>
+<meta name="description" content="Fable Ocean は、AIを使う開発を賢さ・段取り・品質・お金の規律を備えた工房に変える運用の型。修正を資産に変える学びのループを核に。姉妹型 Orchestra との物語と比較も。">
 <style>
   :root{
     --paper:#ECEEE9; --paper-2:#F5F6F2; --ink:#1B2420; --ink-soft:#525A54;
@@ -29,7 +29,7 @@
   .wrap{padding:clamp(24px,5vw,64px) clamp(16px,5vw,40px);display:flex;justify-content:center}
   .sheet{width:100%;max-width:880px}
 
-  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--brass);margin:0 0 14px}
   h1{font-family:var(--serif);font-weight:600;font-size:clamp(29px,5.6vw,50px);line-height:1.18;letter-spacing:.01em;margin:0;text-wrap:balance}
   h1 .em{color:var(--teal-ink);border-bottom:3px solid var(--brass-soft);padding-bottom:2px}
   .thesis{font-size:clamp(15px,2.4vw,18px);color:var(--ink-soft);margin:20px 0 0;max-width:62ch}
@@ -48,19 +48,19 @@
   .baserow .cell span{font-size:12.5px;color:var(--ink-soft);line-height:1.55}
   @media(max-width:620px){.baserow{grid-template-columns:repeat(2,1fr)}}
 
-  /* versus — 対等な2列 */
+  /* versus — Ocean を主に、Orchestra を副に */
   .versus{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   .vcard{border:1px solid var(--line);border-radius:2px;background:var(--paper-2);padding:clamp(18px,3vw,24px)}
-  .vcard.orch{border-top:4px solid var(--teal)}
   .vcard.ocean{border-top:4px solid var(--brass)}
+  .vcard.orch{border-top:4px solid var(--teal)}
   .vcard .who{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 4px}
-  .vcard.orch .who{color:var(--teal)} .vcard.ocean .who{color:var(--brass)}
+  .vcard.ocean .who{color:var(--brass)} .vcard.orch .who{color:var(--teal)}
   .vcard h3{font-family:var(--serif);font-weight:600;font-size:19px;margin:0 0 3px}
   .vcard .by{font-size:12px;color:var(--ink-soft);margin:0 0 14px;font-family:var(--mono)}
   .vcard ul{list-style:none;margin:0;padding:0}
   .vcard li{position:relative;padding-left:20px;margin:10px 0;font-size:14px;line-height:1.6}
   .vcard li::before{content:"";position:absolute;left:0;top:8px;width:9px;height:9px;border-radius:2px;transform:rotate(45deg)}
-  .vcard.orch li::before{background:var(--teal)} .vcard.ocean li::before{background:var(--brass)}
+  .vcard.ocean li::before{background:var(--brass)} .vcard.orch li::before{background:var(--teal)}
   .vcard li b{font-weight:700}
   @media(max-width:600px){.versus{grid-template-columns:1fr}}
 
@@ -73,10 +73,10 @@
   .feature .loop .n{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--ink)}
   .feature .loop .ar{color:var(--brass)}
 
-  .did{display:grid;gap:10px;margin-top:6px}
-  .did .row{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline;border:1px solid var(--line);border-radius:2px;background:var(--paper-2);padding:13px 16px}
-  .did .row .t{font-family:var(--mono);font-size:12px;color:var(--brass);letter-spacing:.08em;white-space:nowrap}
-  .did .row p{margin:0;font-size:14px}
+  .story{border:1px solid var(--line);border-radius:2px;background:var(--paper-2);padding:clamp(16px,3vw,24px);margin-bottom:16px}
+  .story p{margin:0 0 10px;font-size:14.5px;color:var(--ink)}
+  .story p:last-child{margin-bottom:0}
+  .story .note{font-size:13px;color:var(--ink-soft);margin-top:10px}
 
   .phase{border:1px solid var(--line);border-radius:2px;overflow:hidden;background:var(--paper-2)}
   .phase .track{display:grid;grid-template-columns:1fr 1fr}
@@ -92,7 +92,7 @@
 
   .payoff{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
   .payoff li{position:relative;padding-left:26px;font-size:14.5px;line-height:1.6}
-  .payoff li::before{content:"";position:absolute;left:0;top:9px;width:12px;height:12px;background:var(--teal);border-radius:2px;transform:rotate(45deg)}
+  .payoff li::before{content:"";position:absolute;left:0;top:9px;width:12px;height:12px;background:var(--brass);border-radius:2px;transform:rotate(45deg)}
   .payoff li b{font-weight:600}
   @media(max-width:560px){.payoff{grid-template-columns:1fr}}
 
@@ -120,7 +120,7 @@
 <body>
 
 <nav class="nav"><div class="inner">
-  <span class="brand">Operating Charter</span>
+  <span class="brand">Fable Ocean</span>
   <a class="here" href="index.html">運用憲章</a>
   <a href="technical.html">技術解説</a>
   <a href="https://github.com/botarhythm/fable-ocean-skill" rel="noopener">配布Repo ↗</a>
@@ -129,25 +129,23 @@
 <div class="wrap"><div class="sheet">
 
   <header>
-    <p class="eyebrow">運用憲章 · 2つの型、ひとつの哲学</p>
+    <p class="eyebrow">Fable Ocean · 開発運用の型</p>
     <h1>「日雇いの天才」から<br><span class="em">自分の工房の経営</span>へ</h1>
     <p class="thesis">
-      優秀なAIを毎回ゼロから呼ぶ働き方を、<b>賢さ・段取り・品質・お金の規律を備えた"まわり続ける工房"</b>に変えました。
-      この工房は、独立に生まれた2つの型——盟友の <b>Orchestra</b> と、私たちの <b>Ocean</b>——が
-      同じ哲学へ収束していたことに気づき、ひとつに束ねたものです。
+      優秀なAIを毎回ゼロから呼ぶ働き方を、<b>賢さ・段取り・品質・お金の規律を備えた"まわり続ける工房"</b>に変える——
+      それが私たちの開発運用の型 <b>Fable Ocean</b> です。現場の直しを型そのものに刻み、<b>使うほど賢くなります</b>。
     </p>
   </header>
 
   <hr class="rule">
 
-  <section aria-label="共通の哲学">
-    <div class="seclab"><span class="k">まず共通点</span><h2>2つの型が、同じ哲学に行き着いた</h2></div>
+  <section aria-label="Oceanの土台">
+    <div class="seclab"><span class="k">Ocean とは</span><h2>Ocean が立つ4つの土台</h2></div>
     <p class="secintro">
-      Orchestra と Ocean は別々の場所で育ちました。にもかかわらず、両方とも次の土台に自然と行き着いています。
-      別々の設計者が同じ結論に達した——それは、この考え方が本質的に正しいという何よりの証拠です。
+      Ocean は、AIを使う開発を"まわり続ける工房"にするための型です。芯にあるのは、次の4つ。
     </p>
     <div class="base">
-      <p class="cap">両方に共通する土台</p>
+      <p class="cap">Ocean の土台</p>
       <div class="baserow">
         <div class="cell"><b>段取りの標準化</b><span>合図ひとつで、どの現場も同じ手順が立ち上がる</span></div>
         <div class="cell"><b>天才は"ここぞ"だけ</b><span>高い判断（設計・診断・最終検品）にだけ最上位モデルを使う</span></div>
@@ -159,39 +157,8 @@
 
   <hr class="rule">
 
-  <section aria-label="それぞれの独自性">
-    <div class="seclab"><span class="k">ここが個性</span><h2>それぞれの独自性</h2></div>
-    <p class="secintro">
-      同じ哲学でも、力点が違います。優劣ではなく、<b>異なる強みを持つ2つの流儀</b>。だから束ねると、互いの穴を埋め合います。
-    </p>
-    <div class="versus">
-      <div class="vcard orch">
-        <p class="who">Orchestra</p>
-        <h3>配れる型</h3>
-        <p class="by">fable_orchestra / akiratsukakoshi</p>
-        <ul>
-          <li><b>共有して育てる設計。</b> 1つの型を大勢が採用し、作者の更新を受け取り続けられる（プロダクト的発想）。</li>
-          <li><b>明快なリスク採点。</b> 危険度（お金・個人情報・不可逆）を一目で分類する、教えやすい物差し。</li>
-          <li><b>お金への肉薄。</b> トークンを実測する計器と、従量モデルのコスト規律まで踏み込む。</li>
-        </ul>
-      </div>
-      <div class="vcard ocean">
-        <p class="who">Ocean</p>
-        <h3>渡せる仕事</h3>
-        <p class="by">私たちの型</p>
-        <ul>
-          <li><b>別のAIにも手渡せる。</b> 仕事を1枚の指示書にして、別セッション・別AIにそのまま渡せる。</li>
-          <li><b>"曖昧さ"で見極める。</b> 種類ではなく、仕事の難しさそのものを測って担当を決める。</li>
-          <li><b>修正が資産になる。</b> あなたの細かい直しを、その場で終わらせず型そのものに刻む（下記）。</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <hr class="rule">
-
   <section aria-label="学びのループ">
-    <div class="seclab"><span class="k">大切な仕組み</span><h2>修正を"資産"に変える学びのループ</h2></div>
+    <div class="seclab"><span class="k">Ocean の核</span><h2>修正を"資産"に変える学びのループ</h2></div>
     <div class="feature">
       <p class="tag">Ocean の背骨</p>
       <h3>あなたの一言の直しが、次からのルールになる</h3>
@@ -215,17 +182,6 @@
 
   <hr class="rule">
 
-  <section aria-label="私たちがやったこと">
-    <div class="seclab"><span class="k">統合</span><h2>私たちが束ねたやり方</h2></div>
-    <div class="did">
-      <div class="row"><span class="t">背骨に</span><p>方法論の芯は Ocean（曖昧さで選ぶ・仕事を渡す・学びのループ）を採用。</p></div>
-      <div class="row"><span class="t">計器を移植</span><p>Orchestra のトークン実測・お金の規律（F1/F2フェーズ・承認ゲート）を組み込み。</p></div>
-      <div class="row"><span class="t">入口はひとつ</span><p>どのプロジェクトからも1つの合図で起動できるよう統一。</p></div>
-    </div>
-  </section>
-
-  <hr class="rule">
-
   <section aria-label="現在地">
     <div class="seclab"><span class="k">現在地</span><h2>いま工房はどの段階か</h2></div>
     <div class="phase"><div class="track tnum">
@@ -244,7 +200,7 @@
   <hr class="rule">
 
   <section aria-label="今後への効果">
-    <div class="seclab"><span class="k">効果</span><h2>今後のプロジェクト開発に効くこと</h2></div>
+    <div class="seclab"><span class="k">効果</span><h2>Ocean が今後の開発に効くこと</h2></div>
     <ul class="payoff">
       <li><b>訓練済みの工房が付いてくる</b> — 新しい事業をゼロから設計し直さない</li>
       <li><b>出費が読める・不意打ちがない</b> — 高い判断を買う時は必ず事前承認</li>
@@ -253,8 +209,47 @@
       <li><b>変化に強い</b> — モデルや価格が変わっても土台は揺るがない</li>
       <li><b>持ち運べる</b> — この型は全プロジェクト共通の資産</li>
     </ul>
-
     <p class="kicker">要するに——優秀なAIを<span class="b">日雇いする</span>段階を卒業し、<br>賢さと規律を備えた<span class="b">自分の工房を経営する</span>段階に上がった。</p>
+  </section>
+
+  <hr class="rule">
+
+  <section aria-label="姉妹型 Orchestra との物語と比較">
+    <div class="seclab"><span class="k">こぼれ話</span><h2>Ocean は独りで生まれたのではない</h2></div>
+    <div class="story">
+      <p>
+        Ocean が育つ隣で、盟友 <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">akiratsukakoshi</a> が
+        同じ問い——「高い最上位モデルを何に使うか」——から、もう一つの型 <b>Orchestra</b> を独立に育てていました。
+      </p>
+      <p>
+        驚いたことに、二つは<b>同じ哲学（上の4つの土台）に別々に行き着いていた</b>。別々の設計者が同じ結論に達したことは、
+        この考え方が本質的に正しいという何よりの証拠です。Ocean はそこから<b>トークン実測などの"計器"を受け取り</b>、
+        自分の芯（曖昧さで選ぶ・仕事を渡す・学びのループ）はそのままに、お金の規律を強化しました。
+      </p>
+      <p class="note">以下は両者の個性の対比です。優劣ではなく、力点の違い。</p>
+    </div>
+    <div class="versus">
+      <div class="vcard ocean">
+        <p class="who">Ocean（本体）</p>
+        <h3>渡せる仕事</h3>
+        <p class="by">私たちの型</p>
+        <ul>
+          <li><b>別のAIにも手渡せる。</b> 仕事を1枚の指示書にして、別セッション・別AIにそのまま渡せる。</li>
+          <li><b>"曖昧さ"で見極める。</b> 種類ではなく、仕事の難しさそのものを測って担当を決める。</li>
+          <li><b>修正が資産になる。</b> 直しを型そのものに刻む学びのループ。</li>
+        </ul>
+      </div>
+      <div class="vcard orch">
+        <p class="who">Orchestra（姉妹型）</p>
+        <h3>配れる型</h3>
+        <p class="by">fable_orchestra / akiratsukakoshi</p>
+        <ul>
+          <li><b>共有して育てる設計。</b> 1つの型を大勢が採用し、作者の更新を受け取り続けられる。</li>
+          <li><b>明快なリスク採点。</b> 危険度（お金・個人情報・不可逆）を一目で分類する物差し。</li>
+          <li><b>お金への肉薄。</b> トークンを実測する計器と、従量モデルのコスト規律。</li>
+        </ul>
+      </div>
+    </div>
 
     <div class="credit">
       <b>名前の由来</b> — <b>Fable Ocean</b>。すべてを受け止め育む海のような Fable と、そこから生まれる永劫的で有機的な営み。
@@ -263,7 +258,7 @@
 
     <div class="credit">
       <b>謝辞</b> — <b>Orchestra（fable_orchestra）</b>は盟友 <a href="https://github.com/akiratsukakoshi/fable_orchestra" rel="noopener">akiratsukakoshi</a> による型です。
-      同じ問いから独立に生まれた"同志の設計"に敬意を込めて。私たちの Ocean は、その哲学を隣で確かめ合いながら育ちました。
+      同じ問いから独立に生まれた"同志の設計"に敬意を込めて。Ocean は、その哲学を隣で確かめ合いながら育ちました。
     </div>
 
     <div class="next">
@@ -272,7 +267,7 @@
     </div>
 
     <div class="next">
-      <span class="t">仕組みの中身（構造・モデル選択・他スキル連携・導入手順）を知りたい方へ</span>
+      <span class="t">Ocean の仕組みの中身（構造・モデル選択・他スキル連携・導入手順）を知りたい方へ</span>
       <a class="btn" href="technical.html">技術解説ページ →</a>
     </div>
   </section>
@@ -280,7 +275,7 @@
 </div></div>
 
 <footer>
-  <span>Orchestra × Ocean — 同じ哲学、それぞれの独自性</span>
+  <span>Fable Ocean — AIを"まわり続ける工房"に変える型</span>
   <span>更新 2026-07-06 · 運用フェーズ F2</span>
 </footer>
 
