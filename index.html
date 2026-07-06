@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E🌊%3C/text%3E%3C/svg%3E">
 <title>Fable Ocean — AI開発を"まわり続ける工房"に変える型</title>
 <meta name="description" content="Fable Ocean は、AIを使う開発を賢さ・段取り・品質・お金の規律を備えた工房に変える運用の型。修正を資産に変える学びのループを核に。姉妹型 Orchestra との物語と比較も。">
 <style>
   :root{
     --paper:#ECEEE9; --paper-2:#F5F6F2; --ink:#1B2420; --ink-soft:#525A54;
-    --line:#C9CFC6; --teal:#245450; --teal-ink:#173A37; --brass:#8A6220; --brass-soft:#B98A3E;
+    --line:#C9CFC6; --teal:#245450; --teal-ink:#173A37; --brass:#7A5516; --brass-soft:#B98A3E;
     --serif:"Yu Mincho","YuMincho","Hiragino Mincho ProN",serif;
     --sans:"Yu Gothic","YuGothic","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
     --mono:"SFMono-Regular",Consolas,"Courier New",monospace;
@@ -16,6 +17,9 @@
   *{box-sizing:border-box}
   html,body{margin:0}
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.75;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,.thesis,.secintro,.seclab h2{word-break:auto-phrase}
+  p,li,.thesis,.secintro,.credit,.story p,.next .t{overflow-wrap:break-word}
+  .nw{white-space:nowrap}
   .tnum{font-variant-numeric:tabular-nums}
   a{color:var(--teal);text-underline-offset:2px}
 
@@ -133,7 +137,7 @@
     <h1>「日雇いの天才」から<br><span class="em">自分の工房の経営</span>へ</h1>
     <p class="thesis">
       優秀なAIを毎回ゼロから呼ぶ働き方を、<b>賢さ・段取り・品質・お金の規律を備えた"まわり続ける工房"</b>に変える——
-      それが私たちの開発運用の型 <b>Fable Ocean</b> です。現場の直しを型そのものに刻み、<b>使うほど賢くなります</b>。
+      それが私たちの開発運用の型 <b class="nw">Fable Ocean</b> です。現場の直しを型そのものに刻み、<b>使うほど賢くなります</b>。
     </p>
   </header>
 
@@ -252,7 +256,7 @@
     </div>
 
     <div class="credit">
-      <b>名前の由来</b> — <b>Fable Ocean</b>。すべてを受け止め育む海のような Fable と、そこから生まれる永劫的で有機的な営み。
+      <b>名前の由来</b> — <b class="nw">Fable Ocean</b>。すべてを受け止め育む海のような Fable と、そこから生まれる永劫的で有機的な営み。
       現場の事実が型に還り、版を重ね、次のセッションへ受け継がれていく——その循環そのものを名にしました。
     </div>
 
